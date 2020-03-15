@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>PathFinder</title>
+  <link rel="stylesheet" href="./style/main.css">
+</head>
+<body>
+  <div class="content">
+    <div class="left">
+      <!--
+      <canvas id="dungeon" width="200px" height="400px"></canvas>
+      -->
+      <canvas id="dungeon"></canvas>
+    </div>
+    <div class="right">
+      <label for="method">Choose a method: </label>
+      <select name="method" id="method">
+        <option value="breadFirst">BreadFirst(广度优先)</option>
+        <option value="greedy">Greedy(贪婪)</option>
+        <option value="dijkstra">Dijkstra’s</option>
+        <option value="astar" selected>A*</option>
+      </select>
+      <h3 id="status">当前状态：停止(可按空格开始)</h3>
+      <h3>暂停后按 'r' 重置（重置后可以重新选择算法）</h3>
+    </div>
+  </div>
+  <script  type="module" src="./scripts/main.js"></script>
+</body>
+</html>
