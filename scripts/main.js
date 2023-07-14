@@ -24,6 +24,7 @@ game.draw = function() {
 }
 
 game.update = function() {
+    // 执行下一步
     methods[sel.value]()
 }
 
@@ -49,4 +50,5 @@ game.registerAction(' ', () => {
 // 按 'r' 重置
 game.registerAction('r', game.reset.bind(game))
 
+// 监控按键事件
 game.listen()

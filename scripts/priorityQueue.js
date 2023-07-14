@@ -3,7 +3,6 @@ class PriorityQueue {
         this.items = []
     }
 
-
     // enqueue function to add element
     // to the queue as per priority
     enqueue(element, priority) {

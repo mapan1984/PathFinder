@@ -7,8 +7,10 @@ class Dungeon {
         this.width = width
         this.height = height
         this.gridSize = gridSize
+
         this.xMax = this.width / this.gridSize  // cols
         this.yMax = this.height / this.gridSize  // rows
+
         this._canvas = document.querySelector(mapId)
         this._canvas.width = width
         this._canvas.height = height
@@ -33,6 +35,7 @@ class Dungeon {
 
         this.start.costFromStart = 0
 
+        // 记录每个 grid 到 goal 的距离
         this.initGridsDis()
 
         // 记录当前可扩展边界
@@ -60,7 +63,7 @@ class Dungeon {
             for (let x = 0; x < this.xMax; x++) {
                 let random = Math.random()
                 let grid
-                if (random > 0.5) {
+                if (random > 0.7) {
                     grid = new Grid(x, y, 1)
                 } else {
                     grid = new Grid(x, y, 0)
@@ -83,33 +86,33 @@ class Dungeon {
         let x = grid.x
         let y = grid.y
 
-        let xDirection = [x]
-        let yDirection = [y]
-
-        if (x - 1 >= 0) {
-            xDirection.push(x - 1)
-        }
-        if (y - 1 >= 0) {
-            yDirection.push(y - 1)
-        }
-        if (x + 1 < this.xMax) {
-            xDirection.push(x + 1)
-        }
-        if (y + 1 < this.yMax) {
-            yDirection.push(y + 1)
-        }
-
         let res = []
-        for (let x of xDirection) {
-            for (let y of yDirection) {
-                // if (x != grid.x || y != grid.y) {
-                if (!(x == grid.x && y == grid.y)) {
-                    if (this.grids[y][x].obstacle < 1) {
-                        res.push(this.grids[y][x])
-                    }
-                }
+
+        // 上、下、左、右 4 格，禁止走斜线
+        if (y - 1 >= 0) {
+            if (this.grids[y-1][x].obstacle < 1) {
+                res.push(this.grids[y-1][x])
             }
         }
+
+        if (y + 1 < this.yMax) {
+            if (this.grids[y+1][x].obstacle < 1) {
+                res.push(this.grids[y+1][x])
+            }
+        }
+
+        if (x - 1 >= 0) {
+            if (this.grids[y][x-1].obstacle < 1) {
+                res.push(this.grids[y][x-1])
+            }
+        }
+
+        if (x + 1 < this.xMax) {
+            if (this.grids[y][x+1].obstacle < 1) {
+                res.push(this.grids[y][x+1])
+            }
+        }
+
         return res
     }
 
@@ -252,16 +255,23 @@ class Dungeon {
         for (let rows of this.grids) {
             for (let grid of rows) {
                 this.context.fillStyle = '#FFFFFF'
-                if (this.frontier.includes(grid)) {
-                    this.context.fillStyle = '#00FF00'
-                } else if (this.priorityFrontier.includes(grid)) {
+
+                if (
+                    this.frontier.includes(grid)
+                    || this.priorityFrontier.includes(grid)
+                ) {
+                    // 当前边界 green
                     this.context.fillStyle = '#00FF00'
                 } else if (this.visited.includes(grid)) {
+                    // 已访问过 red
                     this.context.fillStyle = '#FF0000'
                 }
+
                 if (grid.obstacle == 1) {
+                    // 障碍
                     this.context.fillStyle = '#000000'
                 }
+
                 this.context.fillRect(
                     grid.x*this.gridSize,
                     grid.y*this.gridSize,
@@ -271,6 +281,7 @@ class Dungeon {
             }
         }
 
+        // 路径 blue
         let current = this.current
         while (current != null) {
             this.context.fillStyle = '#0000FF'
@@ -283,17 +294,18 @@ class Dungeon {
             current = this.cameFrom.get(current)
         }
 
-        // this.context.strokeStyle = 'lightgrey'
-        // this.context.beginPath()
-        // for (let x = 0; x < this.width; x += this.gridSize) {
-        //     this.context.moveTo(x, 0)
-        //     this.context.lineTo(x, this.height)
-        // }
-        // for (let y = 0; y < this.height; y += this.gridSize) {
-        //     this.context.moveTo(0, y)
-        //     this.context.lineTo(this.width, y)
-        // }
-        // this.context.stroke()
+        // 灰色格子框
+        this.context.strokeStyle = 'lightgrey'
+        this.context.beginPath()
+        for (let x = 0; x < this.width; x += this.gridSize) {
+            this.context.moveTo(x, 0)
+            this.context.lineTo(x, this.height)
+        }
+        for (let y = 0; y < this.height; y += this.gridSize) {
+            this.context.moveTo(0, y)
+            this.context.lineTo(this.width, y)
+        }
+        this.context.stroke()
     }
 }
 
